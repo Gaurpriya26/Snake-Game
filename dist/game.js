@@ -2922,26 +2922,40 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   loadSprite("apple", "sprites/apple.png");
   loadSprite("cactus", "sprites/cactus.png");
   loadSound("score", "sounds/score.mp3");
-  var SPEED = 560;
+  loadSound("bgsound", "sounds/OtherworldlyFoe.mp3");
+  loadSound("over", "sounds/robot.mp3");
+  var SPEED = 600;
   var score = 0;
   var BSPEED = 1;
   var g = true;
+  var bg = false;
+  var backgroundMusic;
+  var playBg = /* @__PURE__ */ __name(() => {
+    if (!bg) {
+      backgroundMusic = play("bgsound", { volume: 0.5 });
+      bg = true;
+    }
+  }, "playBg");
   var player = add([
     sprite("snake"),
     pos(100, 200),
     area(),
-    scale(0.04)
+    scale(0.2)
   ]);
   onKeyDown("left", () => {
+    playBg();
     player.move(-SPEED, 0);
   });
   onKeyDown("right", () => {
+    playBg();
     player.move(SPEED, 0);
   });
   onKeyDown("up", () => {
+    playBg();
     player.move(0, -SPEED);
   });
   onKeyDown("down", () => {
+    playBg();
     player.move(0, SPEED);
   });
   loop(4, () => {
@@ -2987,6 +3001,8 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   });
   player.onCollide("cactus", (cactus) => {
     destroy(player);
+    backgroundMusic.pause();
+    play("over");
     addKaboom(player.pos);
     score.text = "Score:" + score.value;
     add([

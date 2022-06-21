@@ -3,7 +3,7 @@ import kaboom from "kaboom"
 document.title= 'SNAKE GAME'
 // initialize context
 kaboom({
-    background: [ 210, 210, 155, ],
+    background: [ 210, 210, 155,],
     font: "sink",
   
 })
@@ -15,40 +15,57 @@ loadSprite("cactus", "sprites/cactus.png")
 
 // load sound
 loadSound("score", "sounds/score.mp3")
+loadSound("bgsound", "sounds/OtherworldlyFoe.mp3")
+loadSound("over", "sounds/robot.mp3")
 
 //variables
-let SPEED=560
-let score=0
-let BSPEED=1
-let g=true
+let SPEED=600;
+let score=0;
+let BSPEED=1;
+let g=true;
+let bg=false;
+let backgroundMusic;
+
+
+const playBg = () =>{
+  if(!bg){ 
+    backgroundMusic = play("bgsound", {volume: 0.5})
+    bg = true;
+  }
+}
 
 //ADD PLAYER
 const player = add([
     sprite("snake"),
     pos(100, 200),
     area(),
-    scale(0.04),
+    scale(0.2),
+
   ])
 
 //events
 onKeyDown("left", () => {
+  playBg()
     player.move(-SPEED, 0)
 })
 onKeyDown("right", () => {
+   playBg()
     player.move(SPEED, 0)
 })
 onKeyDown("up", () => {
+   playBg()
     player.move(0, -SPEED)
 })
 onKeyDown("down", () => {
+   playBg()
     player.move(0, SPEED)
 })
 
 //ADD APPLE
-
 loop(4, () => {
   loop(4, () => {
     if(g){
+    
      let x= rand(0, width())
      let y= height()
     let b = add([
@@ -86,7 +103,6 @@ loop(4, () => {
 })
 
 
-
 //collision with apple
 player.onCollide( "apple", (apple) => {
     destroy(apple)
@@ -98,6 +114,8 @@ player.onCollide( "apple", (apple) => {
 //collision with cactus
 player.onCollide("cactus",(cactus)=> {
   destroy(player)
+  backgroundMusic.pause()
+  play("over")
   addKaboom(player.pos)
   score.text = "Score:" + score.value
    add([
